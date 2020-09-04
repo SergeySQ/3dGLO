@@ -73,7 +73,6 @@ window.addEventListener("DOMContentLoaded", () => {
 	const togglePopUp = () => {
 		const popUp = document.querySelector(".popup"),
 			popUpBtn = document.querySelectorAll(".popup-btn"),
-			popUpClose = document.querySelector(".popup-close"),
 			popUpContent = document.querySelector(".popup-content");
 		let widthWindow = document.documentElement.clientWidth;
 		//отслеживает размер нашего окна
@@ -100,25 +99,27 @@ window.addEventListener("DOMContentLoaded", () => {
 					count = 0;
 					console.log("a");
 				} else {
-					cancelAnimationFrame(rideInterval);
+					popUpContent.style.left = (widthWindow - 250) / 2 + "px";
 					console.log("p");
 				}
 				popUp.style.display = "block";
 			});
 		});
 		//Закрытие модального окна
-		popUpClose.addEventListener("click", () => {
-			popUp.style.display = "none";
-			count = 0;
-			cancelAnimationFrame(showPopUp);
+		popUp.addEventListener("click", (e) => {
+			let target = e.target;
+			if (target.classList.contains("popup-close")) {
+				popUp.style.display = "none";
+			}
 		});
 
 		//плавная прокрутка страницы при клике на элементы меню
-		const smoothLinks = document.querySelectorAll('a[href^="#"]');
-		for (let smoothLink of smoothLinks) {
-			smoothLink.addEventListener("click", (e) => {
+		const menu = document.querySelector("menu"),
+			smoothLinks = menu.querySelectorAll('li a[href^="#"]');
+		for (let btnLinkMenu of smoothLinks) {
+			btnLinkMenu.addEventListener("click", (e) => {
 				e.preventDefault();
-				const id = smoothLink.getAttribute("href");
+				const id = btnLinkMenu.getAttribute("href");
 
 				document.querySelector(id).scrollIntoView({
 					behavior: "smooth",
