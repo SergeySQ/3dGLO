@@ -51,21 +51,25 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	//Меню
 	const toggleMenu = () => {
-		const btnMenu = document.querySelector(".menu"),
-			menu = document.querySelector("menu"),
-			closeBtn = document.querySelector(".close-btn"),
-			menuItems = menu.querySelectorAll("ul>li");
-		const handlerMenu = () => {
+		const body = document.body,
+			menu = document.querySelector("menu");
+		const handlerMenu = (e) => {
 			menu.classList.toggle("active-menu");
 		};
-
-		btnMenu.addEventListener("click", handlerMenu);
-		//Закрытие меню на крестик
-		closeBtn.addEventListener("click", handlerMenu);
-
-		menuItems.forEach((elem) =>
-			elem.addEventListener("click", handlerMenu)
-		);
+		body.addEventListener("click", (e) => {
+			let target = e.target;
+			if (target.closest(".menu")) {
+				handlerMenu();
+			} else if (target.classList.contains("close-btn")) {
+				handlerMenu();
+			} else if (
+				!target.classList.contains("active-menu") &&
+				menu.classList.contains("active-menu") &&
+				!target.matches("li")
+			) {
+				handlerMenu();
+			}
+		});
 	};
 	toggleMenu();
 
@@ -105,11 +109,18 @@ window.addEventListener("DOMContentLoaded", () => {
 				popUp.style.display = "block";
 			});
 		});
+
 		//Закрытие модального окна
 		popUp.addEventListener("click", (e) => {
 			let target = e.target;
+
 			if (target.classList.contains("popup-close")) {
 				popUp.style.display = "none";
+			} else {
+				target = target.closest(".popup-content");
+				if (!target) {
+					popUp.style.display = "none";
+				}
 			}
 		});
 
@@ -144,5 +155,35 @@ window.addEventListener("DOMContentLoaded", () => {
 		btnLink.addEventListener("click", scrolDown);
 	};
 	togglePopUp();
+
+	//Табы
+	const tabs = () => {
+		const tabHeader = document.querySelector(".service-header"),
+			tab = tabHeader.querySelectorAll(".service-header-tab"),
+			tabContent = document.querySelectorAll(".service-tab");
+		const toggleTabContent = (index) => {
+			for (let i = 0; i < tabContent.length; i++) {
+				if (index === i) {
+					tab[i].classList.add("active");
+					tabContent[i].classList.remove("d-none");
+				} else {
+					tab[i].classList.remove("active");
+					tabContent[i].classList.add("d-none");
+				}
+			}
+		};
+		tabHeader.addEventListener("click", (event) => {
+			let target = event.target;
+			target = target.closest(".service-header-tab");
+			if (target) {
+				tab.forEach((item, i) => {
+					if (item === target) {
+						toggleTabContent(i);
+					}
+				});
+			}
+		});
+	};
+	tabs();
 });
 //15:12
