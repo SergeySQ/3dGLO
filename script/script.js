@@ -303,6 +303,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	document.getElementById('command').addEventListener('mouseout', mouseOut);
 	//Калькулятор
 	const calc = (price = 100) => {
+		//Анимашка чисел
 		const numAnimation = (totalValue, from, to, duration) => {
 			let elem = totalValue,
 				start = new Date().getTime();
