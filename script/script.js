@@ -276,31 +276,35 @@ window.addEventListener("DOMContentLoaded", () => {
 	};
 	slider();
 	//запрет ввода всего кроме цифр в калькуляторе
-	const inputArray = [document.querySelector('.calc-square'), document.querySelector('.calc-count'), document.querySelector('.calc-day')];
+	const inputArray = [
+		document.querySelector(".calc-square"),
+		document.querySelector(".calc-count"),
+		document.querySelector(".calc-day"),
+	];
 	inputArray.forEach((item) => {
-		item.addEventListener('input', () => {
-			item.value = item.value.replace(/\D/, '');
+		item.addEventListener("input", () => {
+			item.value = item.value.replace(/\D/, "");
 		});
 	});
-	//По наведению мышкой меняется фотография
-	const mouseOver = e => {
-		const target = e.target;
 
-		if (target.matches('.command__photo')) {
+	//valid
+
+	//По наведению мышкой меняется фотография
+	const mouseOver = (e) => {
+		const target = e.target;
+		if (target.matches(".command__photo")) {
 			target.dataset.image = target.src;
 			target.src = target.dataset.img;
-
 		}
 	};
-	const mouseOut = e => {
+	const mouseOut = (e) => {
 		const target = e.target;
-
-		if (target.matches('.command__photo')) {
+		if (target.matches(".command__photo")) {
 			target.src = target.dataset.image;
 		}
 	};
-	document.getElementById('command').addEventListener('mouseover', mouseOver);
-	document.getElementById('command').addEventListener('mouseout', mouseOut);
+	document.getElementById("command").addEventListener("mouseover", mouseOver);
+	document.getElementById("command").addEventListener("mouseout", mouseOut);
 	//Калькулятор
 	const calc = (price = 100) => {
 		//Анимашка чисел
@@ -308,19 +312,19 @@ window.addEventListener("DOMContentLoaded", () => {
 			let elem = totalValue,
 				start = new Date().getTime();
 			let timerId = setTimeout(function tick() {
-				const now = (new Date().getTime()) - start;
+				const now = new Date().getTime() - start;
 				let progress = now / duration,
 					result = Math.floor((to - from) * progress + from);
 				elem.textContent = progress < 1 ? result : to;
 				if (progress < 1) timerId = setTimeout(tick, 10);
 			}, 10);
 		};
-		const calcBlock = document.querySelector('.calc-block'),
+		const calcBlock = document.querySelector(".calc-block"),
 			calcType = document.querySelector(".calc-type"),
-			calcSquare = document.querySelector('.calc-square'),
-			calcCount = document.querySelector('.calc-count'),
-			calcDay = document.querySelector('.calc-day'),
-			totalValue = document.getElementById('total');
+			calcSquare = document.querySelector(".calc-square"),
+			calcCount = document.querySelector(".calc-count"),
+			calcDay = document.querySelector(".calc-day"),
+			totalValue = document.getElementById("total");
 		const countSum = () => {
 			let total = 0,
 				countValue = 1,
@@ -339,17 +343,95 @@ window.addEventListener("DOMContentLoaded", () => {
 				total = price * typeValue * squareValue * countValue * dayValue;
 			}
 
-
 			numAnimation(totalValue, +totalValue.textContent, total, 500);
 		};
 
 		calcBlock.addEventListener("change", (e) => {
 			const target = e.target;
-			if (target.matches('select') || target.matches('input')) {
+			if (target.matches("select") || target.matches("input")) {
 				countSum();
 			}
 		});
 	};
 	calc(100);
+	//send-ajax-form
+
+	const sendForm = () => {
+		const errorMessage = "Что-то пошло нет...",
+			loadMessage = "Загрузка...",
+			successMessage = "Спасибо!Мы с вами свяжемся! ";
+
+		const statusMessage = document.createElement("div");
+		statusMessage.style.cssText = "font-size: 2rem; color: white";
+
+		//для каждой формы
+		document.querySelectorAll("form").forEach((form) => {
+			form.addEventListener("submit", (e) => {
+				e.preventDefault();
+				form.appendChild(statusMessage);
+				statusMessage.textContent = loadMessage;
+				const formData = new FormData(form);
+				const body = {};
+				formData.forEach((val, key) => {
+					body[key] = val;
+				});
+				postData(
+					body,
+					() => {
+						statusMessage.textContent = successMessage;
+					},
+					(error) => {
+						statusMessage.textContent = errorMessage;
+						console.error(error);
+					}
+				);
+
+				//через 3 секунды очищаем инпут
+				setTimeout(() => {
+					form.querySelectorAll("input").forEach((item) => {
+						item.value = "";
+					});
+				}, 3000);
+			});
+		});
+		//запрет ввода в инпуте "номера" всего кроме цифр и знака +
+		document
+			.querySelectorAll('input[name="user_phone"]')
+			.forEach((item) => {
+				item.addEventListener("input", () => {
+					item.value = item.value.replace(/[^\+\d]/g, "");
+				});
+			});
+		//запрет ввода в инпуте "имя" и "сообщение" всего, кроме кириллицы и пробелов
+		document
+			.querySelectorAll(
+				'input[name="user_name"],input[name=user_message]'
+			)
+			.forEach((item) => {
+				item.addEventListener("input", () => {
+					item.value = item.value.replace(/[^а-я\s]/gi, "");
+				});
+			});
+		//функция запроса на сервер
+		const postData = (body, outputData, errorData) => {
+			const request = new XMLHttpRequest();
+
+			request.addEventListener("readystatechange", () => {
+				if (request.readyState !== 4) {
+					return;
+				}
+
+				if (request.status === 200) {
+					outputData();
+				} else {
+					errorData(request.status);
+				}
+			});
+
+			request.open("POST", "./server.php");
+			request.setRequestHeader("Content-Type", "application/json");
+			request.send(JSON.stringify(body));
+		};
+	};
+	sendForm();
 });
-//15:12
