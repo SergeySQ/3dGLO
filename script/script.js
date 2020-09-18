@@ -375,16 +375,14 @@ window.addEventListener("DOMContentLoaded", () => {
 				formData.forEach((val, key) => {
 					body[key] = val;
 				});
-				postData(
-					body,
-					() => {
+				postData(body)
+					.then(() => {
 						statusMessage.textContent = successMessage;
-					},
-					(error) => {
+					})
+					.catch((error) => {
 						statusMessage.textContent = errorMessage;
 						console.error(error);
-					}
-				);
+					});
 
 				//через 3 секунды очищаем инпут
 				setTimeout(() => {
@@ -403,34 +401,39 @@ window.addEventListener("DOMContentLoaded", () => {
 				});
 			});
 		//запрет ввода в инпуте "имя" и "сообщение" всего, кроме кириллицы и пробелов
+		document.querySelectorAll('input[name="user_name"]').forEach((item) => {
+			item.addEventListener("input", () => {
+				item.value = item.value.replace(/[^а-я\s]/gi, "");
+			});
+		});
 		document
-			.querySelectorAll(
-				'input[name="user_name"],input[name=user_message]'
-			)
+			.querySelectorAll('input[name="user_message"]')
 			.forEach((item) => {
 				item.addEventListener("input", () => {
-					item.value = item.value.replace(/[^а-я\s]/gi, "");
+					item.value = item.value.replace(/[^а-я0-9.,!-?\s]/gi, "");
 				});
 			});
 		//функция запроса на сервер
 		const postData = (body, outputData, errorData) => {
-			const request = new XMLHttpRequest();
+			return new Promise((resolve, reject) => {
+				const request = new XMLHttpRequest();
 
-			request.addEventListener("readystatechange", () => {
-				if (request.readyState !== 4) {
-					return;
-				}
+				request.addEventListener("readystatechange", () => {
+					if (request.readyState !== 4) {
+						return;
+					}
 
-				if (request.status === 200) {
-					outputData();
-				} else {
-					errorData(request.status);
-				}
+					if (request.status === 200) {
+						resolve();
+					} else {
+						reject(request.status);
+					}
+				});
+
+				request.open("POST", "./server.php");
+				request.setRequestHeader("Content-Type", "application/json");
+				request.send(JSON.stringify(body));
 			});
-
-			request.open("POST", "./server.php");
-			request.setRequestHeader("Content-Type", "application/json");
-			request.send(JSON.stringify(body));
 		};
 	};
 	sendForm();
