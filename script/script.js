@@ -354,35 +354,34 @@ window.addEventListener("DOMContentLoaded", () => {
 		});
 	};
 	calc(100);
+
 	//send-ajax-form
-
 	const sendForm = () => {
-		const errorMessage = "Что-то пошло нет...",
-			loadMessage = "Загрузка...",
-			successMessage = "Спасибо!Мы с вами свяжемся! ";
-
-		const statusMessage = document.createElement("div");
-		statusMessage.style.cssText = "font-size: 2rem; color: white";
+		const statusMessage = document.createElement("img");
+		statusMessage.src = "./images/loader.gif";
+		const successMessage = document.createElement("div");
+		successMessage.style.cssText = "font-size: 2rem; color: white;";
+		successMessage.textContent = "Ваша заявка принята";
 
 		//для каждой формы
 		document.querySelectorAll("form").forEach((form) => {
 			form.addEventListener("submit", (e) => {
 				e.preventDefault();
 				form.appendChild(statusMessage);
-				statusMessage.textContent = loadMessage;
 				const formData = new FormData(form);
 				const body = {};
 				formData.forEach((val, key) => {
 					body[key] = val;
 				});
 				postData(body)
-					.then(() => {
-						statusMessage.textContent = successMessage;
+					.then((response) => {
+						if (response.status !== 200) {
+							throw new Error("status network not 200.");
+						}
+						form.removeChild(statusMessage);
+						form.appendChild(successMessage);
 					})
-					.catch((error) => {
-						statusMessage.textContent = errorMessage;
-						console.error(error);
-					});
+					.catch((error) => console.error(error));
 
 				//через 3 секунды очищаем инпут
 				setTimeout(() => {
@@ -390,8 +389,22 @@ window.addEventListener("DOMContentLoaded", () => {
 						item.value = "";
 					});
 				}, 3000);
+				//через 7 секунд убирается запись об успешной отправке
+				setTimeout(() => {
+					form.removeChild(successMessage);
+				}, 7000);
 			});
 		});
+
+		//функция запроса на сервер
+		const postData = (body) =>
+			fetch("./server.php", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+			});
 		//запрет ввода в инпуте "номера" всего кроме цифр и знака +
 		document
 			.querySelectorAll('input[name="user_phone"]')
@@ -413,28 +426,7 @@ window.addEventListener("DOMContentLoaded", () => {
 					item.value = item.value.replace(/[^а-я0-9.,!-?\s]/gi, "");
 				});
 			});
-		//функция запроса на сервер
-		const postData = (body, outputData, errorData) => {
-			return new Promise((resolve, reject) => {
-				const request = new XMLHttpRequest();
-
-				request.addEventListener("readystatechange", () => {
-					if (request.readyState !== 4) {
-						return;
-					}
-
-					if (request.status === 200) {
-						resolve();
-					} else {
-						reject(request.status);
-					}
-				});
-
-				request.open("POST", "./server.php");
-				request.setRequestHeader("Content-Type", "application/json");
-				request.send(JSON.stringify(body));
-			});
-		};
 	};
+
 	sendForm();
 });
