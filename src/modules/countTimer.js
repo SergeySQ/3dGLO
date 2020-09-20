@@ -1,10 +1,16 @@
+'use strict';
+
+import {
+    lab
+} from "color-convert";
+
 // Timer
 const countTimer = (deadline) => {
     const timerHours = document.querySelector("#timer-hours"),
         timerMinutes = document.querySelector("#timer-minutes"),
         timerSeconds = document.querySelector("#timer-seconds");
 
-    function getTimeRemaining() {
+    const getTimeRemaining = () => {
         const dateStop = new Date(deadline).getTime(),
             dateNow = new Date().getTime(),
             timeRemaining = (dateStop - dateNow) / 1000,
@@ -19,7 +25,7 @@ const countTimer = (deadline) => {
         };
     }
     //Добавление нуля перед значениями которые состоят  из одной цифры (из 4:6:50 сделает 04:06:50)
-    const addZero = function (time) {
+    const addZero = (time) => {
         if (time >= 0 && time < 10) {
             return "0" + time;
         } else {
@@ -27,6 +33,7 @@ const countTimer = (deadline) => {
         }
     };
     //Обновление таймера
+
     const updateClockId = setInterval(() => {
         const timer = getTimeRemaining();
 
@@ -41,7 +48,7 @@ const countTimer = (deadline) => {
             timerMinutes.textContent = "00";
             timerSeconds.textContent = "00";
         }
-    }, 1000);
+    });
 };
 
 export default countTimer;

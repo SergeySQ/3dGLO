@@ -1,3 +1,4 @@
+'use strict';
 //popup
 const togglePopUp = () => {
 	const popUp = document.querySelector(".popup"),
@@ -49,34 +50,6 @@ const togglePopUp = () => {
 		}
 	});
 
-	//плавная прокрутка страницы при клике на элементы меню
-	const menu = document.querySelector("menu"),
-		smoothLinks = menu.querySelectorAll('li a[href^="#"]');
-	for (let btnLinkMenu of smoothLinks) {
-		btnLinkMenu.addEventListener("click", (e) => {
-			e.preventDefault();
-			const id = btnLinkMenu.getAttribute("href");
 
-			document.querySelector(id).scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-			});
-		});
-	}
-	//Перемещение на следущий слайд по нажатию кнопку
-	const btnLink = document.querySelector("a");
-	const scrolDown = () => {
-		let windowCoords = document.documentElement.clientHeight;
-		(function scroll() {
-			if (window.pageYOffset < windowCoords) {
-				window.scrollBy(0, 10);
-				setTimeout(scroll, 0);
-			}
-			if (window.pageYOffset > windowCoords) {
-				window.scrollTo(0, windowCoords);
-			}
-		})();
-	};
-	btnLink.addEventListener("click", scrolDown);
 };
 export default togglePopUp;

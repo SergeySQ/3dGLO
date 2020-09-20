@@ -17,7 +17,7 @@ import littleThings from "./modules/littleThings";
 import calc from "./modules/calc";
 import sendForm from "./modules/sendForm";
 // Timer
-countTimer("21 september 2020");
+countTimer("22 september 2020");
 
 //Меню
 toggleMenu();

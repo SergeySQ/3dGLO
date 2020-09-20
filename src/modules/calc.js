@@ -33,7 +33,7 @@ const calc = (price = 100) => {
             dayValue *= 1.5;
         }
         if (typeValue && squareValue) {
-            total = price * typeValue * squareValue * countValue * dayValue;
+            total = Math.ceil(price * typeValue * squareValue * countValue * dayValue);
         }
 
         numAnimation(totalValue, +totalValue.textContent, total, 500);
