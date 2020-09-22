@@ -8,15 +8,17 @@ const togglePopUp = () => {
 	//отслеживает размер нашего окна
 	window.addEventListener("resize", () => {
 		widthWindow = document.documentElement.clientWidth;
+
 	});
 	//Анимашка
 	let count = 0,
 		rideInterval;
 	const showPopUp = () => {
 		rideInterval = requestAnimationFrame(showPopUp);
-		count += 100;
-		if (count < (widthWindow - 290) / 2) {
-			popUpContent.style.left = count + "px";
+		count += 10;
+		if (count < (widthWindow - 1250) / 2) {
+			popUpContent.style.top = count + "px";
+			popUpContent.style.left = 800 + "px";
 		} else {
 			cancelAnimationFrame(rideInterval);
 		}
@@ -27,10 +29,10 @@ const togglePopUp = () => {
 			if (widthWindow > 768) {
 				rideInterval = requestAnimationFrame(showPopUp);
 				count = 0;
-				console.log("a");
+
 			} else {
-				popUpContent.style.left = (widthWindow - 250) / 2 + "px";
-				console.log("p");
+				popUpContent.style.top = (widthWindow - 250) / 2 + "px";
+
 			}
 			popUp.style.display = "block";
 		});
